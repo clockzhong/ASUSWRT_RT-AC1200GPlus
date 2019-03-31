@@ -3,6 +3,7 @@
 The official ASUS WRT for RT-AC1200+, copied the code source tree from: https://dlcdnets.asus.com/pub/ASUS/wireless/RT-AC1200G+/GPL_RT_AC1200G+__300438250624.zip
 
 #Install Dependencies:
+
 sudo apt-get install --no-install-recommends autoconf automake bash bison bzip2 diffutils file flex g++ gawk gcc-multilib gettext gperf groff-base libncurses-dev libexpat1-dev libslang2 libssl-dev libtool libxml-parser-perl make patch perl pkg-config python sed shtool tar texinfo unzip zlib1g zlib1g-dev
 
 sudo apt-get install lib32stdc++6 lib32z1-dev
