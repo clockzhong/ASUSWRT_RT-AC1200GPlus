@@ -1,28 +1,24 @@
-#ASUSWRT_RT-AC1200G+
+### ASUSWRT_RT-AC1200G+
 
 The official ASUS WRT for RT-AC1200+, copied the code source tree from: https://dlcdnets.asus.com/pub/ASUS/wireless/RT-AC1200G+/GPL_RT_AC1200G+__300438250624.zip
 
-#Install Dependencies:
-
+### Install Dependencies:
+``` bash
 sudo apt-get install --no-install-recommends autoconf automake bash bison bzip2 diffutils file flex g++ gawk gcc-multilib gettext gperf groff-base libncurses-dev libexpat1-dev libslang2 libssl-dev libtool libxml-parser-perl make patch perl pkg-config python sed shtool tar texinfo unzip zlib1g zlib1g-dev
-
 sudo apt-get install lib32stdc++6 lib32z1-dev
-
 sudo apt-get --no-install-recommends install automake1.11
-
 sudo apt-get install libelf-dev:i386 libelf1:i386
-
 sudo apt-get --no-install-recommends install lib32z1-dev lib32stdc++6
+```
 
-
-#Start Build:
-
+### Start Build:
+``` bash
+sudo su
 source ./setEnv.sh
-
 cd $SRC
-
 make RT-AC1200G+
+```
 
+### Then upload ./image/RT-AC1200G+.trx to your router with its web interface
 
-#Then upload ./image/RT-AC1200G+.trx to your router
 
