@@ -1,0 +1,88 @@
+#!/bin/sh /etc/rc.common
+#
+# @@-COPYRIGHT-START-@@
+#
+# Copyright (c) 2013,2014 Qualcomm Atheros, Inc.
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary.
+#
+# @@-COPYRIGHT-END-@@
+#
+
+START=55
+SERVICE_WRITE_PID=1
+SERVICE_DAEMONIZE=1
+SERVICE_DEBUG_OUTPUT=0
+SERVICE_PATH="/usr/sbin/lbd"
+LBD_CONFIG_FILE="/tmp/lbd.conf"
+LBD_RUN_FILE="/var/run/.lbd"
+
+. /lib/functions/lbd-config.sh
+. /lib/functions/whc-debug.sh
+. /lib/functions/whc-iface.sh
+
+check_bands() {
+	local band_24g
+	local band_5g
+	BANDS=$(/usr/sbin/iwconfig 2> /dev/null | grep Frequency | cut -d':' -f 3 | cut -d'.' -f 1)
+	for band in $BANDS
+	do
+		if [ "$band" == "2" ]; then
+			band_24g=1
+		elif [ "$band" == "5" ]; then
+			band_5g=1
+		fi
+	done
+
+	if [ "$band_24g" == "1" ] && [ "$band_5g" == "1" ]; then
+		dual_bands=1
+	else
+		dual_bands=0
+	fi
+}
+
+start() {
+	whc_wifi_config_lock
+	__stop
+
+	config_load 'lbd'
+	config_get_bool enabled config 'Enable' '0'
+	local lbd_rcd_enabled=`ls /etc/rc.d/S${START}lbd 2> /dev/null`
+
+	[ "$enabled" -gt 0 -a -n "$lbd_rcd_enabled" ] || {
+		whc_wifi_config_unlock
+		return 1
+	}
+
+	check_bands
+	if [ "$dual_bands" -ne "1" ]; then
+		whc_echo lbd "require both 2.4 GHz and 5 GHz to be configured. Aborting start."
+		whc_wifi_config_unlock
+		return 1
+	fi
+
+	whc_echo lbd "starting daemon"
+	# Create configuration file and start lbd
+	lbd_create_config $LBD_CONFIG_FILE 0 # second param indicates running in single AP mode
+	${SVCDBG}service_start ${SERVICE_PATH} -d -C "$LBD_CONFIG_FILE"
+
+	touch $LBD_RUN_FILE
+	whc_wifi_config_unlock
+}
+
+__stop() {
+	${SVCDBG}service_stop ${SERVICE_PATH}
+
+	# Workaround, sometimes service_stop does not kill lbd
+	start-stop-daemon -K -x ${SERVICE_PATH} -s SIGKILL > /dev/null
+}
+
+stop() {
+	__stop
+	config_load 'lbd'
+}
+
+restart() {
+	[ -f "$LBD_RUN_FILE" ] || return
+	start
+}

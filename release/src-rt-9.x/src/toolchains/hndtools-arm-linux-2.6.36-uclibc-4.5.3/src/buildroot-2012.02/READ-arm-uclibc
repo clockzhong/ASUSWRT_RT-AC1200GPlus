@@ -1,0 +1,22 @@
+How to build GCC-4.5.3 with uClibc toolchains for ARM
+================================================================================
+If you want to build a new GCC 4.5.3 with uClibc ARM toolchains for linux-2.6.36 router on your directory, you need to check out toolchains source from server.
+
+1. Check out source:
+
+	linux$svn co http://svn.sj.broadcom.com/svn/wlansw/groups/compilers/hndtools/linux-2.6.36/buildroot-2012.02
+
+2. Create your configure file.
+
+	linux$cd buildroot-2012.02
+	linux$cp dl_save/defconfig-arm-uclibc .config
+
+3. Change new install path, set the BR2_STAGING_DIR variable in .config file.
+
+	BR2_STAGING_DIR="new install path"
+
+4. Issue make to build toolchains.
+
+	linux$make
+
+After make complete, new toolchains would be installed on BR2_STAGING_DIR. 
