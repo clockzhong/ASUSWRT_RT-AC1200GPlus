@@ -21,4 +21,6 @@ make RT-AC1200G+
 
 ### Then upload ./image/RT-AC1200G+.trx to your router with its web interface
 
+                        Clock  2019/04/01
+
 
