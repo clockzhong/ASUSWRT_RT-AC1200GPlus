@@ -9,8 +9,9 @@ sudo apt-get install lib32stdc++6 lib32z1-dev
 sudo apt-get --no-install-recommends install automake1.11
 sudo apt-get install libelf-dev:i386 libelf1:i386
 sudo apt-get --no-install-recommends install lib32z1-dev lib32stdc++6
-sudo apt-get cmake
+sudo apt-get cmake xsltproc docbook-xsl-* intltool patch libglib2.0-dev gtk-doc-tools u-boot-tools texinfo autopoint
 ```
+The about dependencies were verified on Ubuntu18
 
 ### Start Build:
 ``` bash
