@@ -1194,7 +1194,8 @@ function show_wl_maclist_x(){
 			code += '</td></tr></table>';
 			code += '</td>';
 			code += '<td width="20%"><input type="button" class=\"remove_btn\" onclick=\"deleteRow(this, \'' + clientMac + '\');\" value=\"\"/></td></tr>';
-			clientListEventData.push({"mac" : clientMac, "name" : "", "ip" : "", "callBack" : "GuestNetwork"});
+			if(validator.mac_addr(clientMac))
+				clientListEventData.push({"mac" : clientMac, "name" : "", "ip" : "", "callBack" : "GuestNetwork"});
 		});
 	}	
 	
@@ -1233,7 +1234,7 @@ function addRow(obj, upper){
 		obj.focus();
 		obj.select();			
 		return false;
-	}else if(!check_macaddr(obj, check_hwaddr_flag(obj))){
+	}else if(!check_macaddr(obj, check_hwaddr_flag(obj, 'inner'))){
 		obj.focus();
 		obj.select();	
 		return false;	

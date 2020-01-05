@@ -25,6 +25,7 @@
 <script type="text/javascript" src="/form.js"></script>
 <script type="text/javascript" src="client_function.js"></script>
 <script type="text/javascript" src="/js/httpApi.js"></script>
+<script language="JavaScript" type="text/javascript" src="/js/asus_eula.js"></script>
 <style>
 .QISform_wireless{
 	width:600px;
@@ -347,8 +348,8 @@ if(pm_support) {
 
 function initial(){
 	show_menu();
-	// http://www.asus.com/support/FAQ/1008718/
-	httpApi.faqURL("faq", "1008718", "https://www.asus.com", "/support/FAQ/");
+	// https://www.asus.com/support/FAQ/1008718/
+	httpApi.faqURL("1008718", function(url){document.getElementById("faq").href=url;});
 
 	if(downsize_4m_support || downsize_8m_support)
 		document.getElementById("guest_image").parentNode.style.display = "none";
@@ -414,8 +415,7 @@ function initial(){
 	}
 
 	/* MODELDEP */
-	if(based_modelid == "RT-AC85U" || based_modelid == "RT-AC65U"){
-	//if(based_modelid == "RT-AC85U" || based_modelid == "RT-AC65U" || based_modelid == "BLUECAVE"){
+	if(based_modelid == "RT-AC85U" || based_modelid == "RT-AC85P" || based_modelid == "RT-AC65U"){
 		if(document.form.qos_type_orig.value == "1"){
 			document.getElementById('bandwidth_setting_tr').style.display = "none";
 			document.form.qos_type_radio[1].checked = true;
@@ -532,9 +532,8 @@ function validForm(){
 	if(document.form.qos_enable.value == 1){
 		var qos_type = document.form.qos_type.value;
 		if(qos_type == 1) {
-			if(!reset_wan_to_fo(document.form, 1)) {
+			if(!reset_wan_to_fo.check_status())
 				return false;
-			}
 		}
 		if(qos_type != 2){	//not Bandwidth Limiter
 			if( ((qos_type == 1 && document.form.bw_setting_name[1].checked == true ) || qos_type == 0) && document.form.obw.value.length == 0){	//To check field is empty
@@ -634,7 +633,9 @@ function submitQoS(){
 	if(validForm()){
 
 		if(document.form.qos_enable.value == 1 && document.form.qos_type.value == 1 && document.form.TM_EULA.value == 0){
-			show_tm_eula();
+			ASUS_EULA
+				.config(eula_confirm, cancel)
+				.show("tm")
 		}
 		else{
 			if(ctf_disable == 1 || (fc_disable_orig != '' && runner_disable_orig != '')){	//HW NAT [OFF] or HND ROUTER
@@ -654,6 +655,9 @@ function submitQoS(){
 				}
 			}
 
+			if(reset_wan_to_fo.change_status)
+				reset_wan_to_fo.change_wan_mode(document.form);
+
 			showLoading();
 			document.form.submit();
 		}
@@ -664,7 +668,7 @@ function submitQoS(){
 
 function change_qos_type(value){
 	/* MODELDEP */
-	if(value=="1" && (based_modelid == "RT-AC85U" || based_modelid == "RT-AC65U")){	//Force change to 0
+	if(value=="1" && (based_modelid == "RT-AC85U" || based_modelid == "RT-AC85P" || based_modelid == "RT-AC65U")){	//Force change to 0
 		value = 0;
 	}
 
@@ -1281,23 +1285,6 @@ function check_field(){
 	}
 }
 
-function show_tm_eula(){
-	$.get("tm_eula.htm", function(data){
-		document.getElementById('agreement_panel').innerHTML= data;
-		var url = "https://www.asus.com/Microsite/networks/Trend_Micro_EULA/";
-		$("#eula_url").attr("href",url);
-		url = "https://www.trendmicro.com/en_us/about/legal/privacy-policy-product.html"
-		$("#tm_eula_url").attr("href",url);
-		url = "https://success.trendmicro.com/data-collection-disclosure";
-		$("#tm_disclosure_url").attr("href",url);
-		adjust_TM_eula_height("agreement_panel");
-	});
-
-	dr_advise();
-	cal_panel_block("agreement_panel", 0.25);
-	$("#agreement_panel").fadeIn(300);
-}
-
 function eula_confirm(){
 	document.form.TM_EULA.value = 1;
 	submitQoS();
@@ -1331,7 +1318,6 @@ function setGroup(name){
 <body onload="initial();" id="body_id" onunload="unload_body();" onClick="">
 <div id="TopBanner"></div>
 <div id="Loading" class="popup_bg"></div>
-<div id="agreement_panel" class="eula_panel_container"></div>
 <div id="hiddenMask" class="popup_bg" style="z-index:999;">
 	<table cellpadding="5" cellspacing="0" id="dr_sweet_advise" class="dr_sweet_advise" align="center"></table>
 	<!--[if lte IE 6.5.]><script>alert("<#ALERT_TO_CHANGE_BROWSER#>");</script><![endif]-->
